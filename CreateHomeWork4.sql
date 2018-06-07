@@ -51,15 +51,17 @@ GO
  CREATE TABLE GiveWeapon
  (
 	OfficerID int not null
-		foreign key references Officer(ID),
+		foreign key references Officer(ID)
+		on delete cascade,
 	DeliverID int not null
-		foreign key references Deliver(ID),
+		foreign key references Deliver(ID)
+		on delete cascade,
 	primary key(OfficerID,DeliverID)	
  )
  GO
 
  INSERT INTO Deliver
- (FirstName,SecondName,ThirdName,[Rank],w)
+ (FirstName,SecondName,ThirdName,[Rank],Weapon)
  VALUES
  ('Буров', 'O.','C.','майор','AK-47'),
  ('Рыбаков', 'Н.','Г.','майор','Глок20'),
@@ -88,6 +90,6 @@ GO
  SELECT * FROM Officer
  SELECT * FROM GiveWeapon
 
- DROP TABLE Officer;
  DROP TABLE GiveWeapon;
+ DROP TABLE Officer;
  DROP TABLE Deliver;
