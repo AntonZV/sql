@@ -26,23 +26,25 @@ GO
 
  CREATE TABLE Deliver
  (
-	ID int identity not null primary key,
+	ID int identity not null unique,
     FirstName nvarchar(20) not null,
 	SecondName nvarchar(20) not null,
 	ThirdName nvarchar(20) not null,
 	[Rank] nvarchar(20) not null,
-	Weapon nvarchar(10) not null
+	Weapon nvarchar(10) not null,
+	primary key( FirstName, SecondName, ThirdName)
  )
  GO
 
  CREATE TABLE Officer
  (
-	ID int identity not null primary key,
+	ID int identity not null unique,
 	FirstName nvarchar(20) not null,
 	SecondName nvarchar(20) not null,
 	ThirdName nvarchar(20) not null,
 	[Rank] nvarchar(20) not null,
 	Number int not null,
+	primary key( FirstName, SecondName, ThirdName)
  )
  GO
 
