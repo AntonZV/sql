@@ -24,4 +24,6 @@ EXECUTE sp_helpdb HomeWork5;
 USE HomeWork5              
 GO   
 
+--bla bla
+
  
