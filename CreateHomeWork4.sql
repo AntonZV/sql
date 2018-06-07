@@ -1,8 +1,10 @@
+DROP DATABASE HomeWork4
+
 CREATE DATABASE HomeWork4  
 ON						
 (
 	NAME = 'HomeWork4',			
-	FILENAME = 'D:\Praktika\MS SQL\HomeWork4.mdf',		
+	FILENAME = 'D:\Praktika\SQL\HomeWork4.mdf',		
 	SIZE = 30MB,                   
 	MAXSIZE = 100MB,				
 	FILEGROWTH = 10MB			
@@ -10,7 +12,7 @@ ON
 LOG ON						 
 ( 
 	NAME = 'LogHomeWork4',				   
-	FILENAME = 'D:\Praktika\MS SQL\HomeWork4.ldf',       
+	FILENAME = 'D:\Praktika\SQL\HomeWork4.ldf',       
 	SIZE = 5MB,                      
 	MAXSIZE = 50MB,                  
 	FILEGROWTH = 5MB                  
@@ -29,6 +31,7 @@ GO
 	SecondName nvarchar(20) not null,
 	ThirdName nvarchar(20) not null,
 	[Rank] nvarchar(20) not null,
+	Weapon nvarchar(10) not null
  )
  GO
 
@@ -43,22 +46,22 @@ GO
  )
  GO
 
- CREATE TABLE Weapon
+ CREATE TABLE GiveWeapon
  (
-	Name nvarchar(10) not null,
 	OfficerID int not null
 		foreign key references Officer(ID),
-	DeliverID int not null,
-		foreign key references Deliver(ID)	
+	DeliverID int not null
+		foreign key references Deliver(ID),
+	primary key(OfficerID,DeliverID)	
  )
  GO
 
  INSERT INTO Deliver
- (FirstName,SecondName,ThirdName,[Rank])
+ (FirstName,SecondName,ThirdName,[Rank],w)
  VALUES
- ('Буров', 'O.','C.','майор'),
- ('Рыбаков', 'Н.','Г.','майор'),
- ('Деребанов', 'В.','Я.','подполковник')
+ ('Буров', 'O.','C.','майор','AK-47'),
+ ('Рыбаков', 'Н.','Г.','майор','Глок20'),
+ ('Деребанов', 'В.','Я.','подполковник','AK-74')
 
  INSERT INTO Officer
  (FirstName,SecondName,ThirdName,[Rank],Number)
@@ -68,17 +71,21 @@ GO
  ('Леонтьев', 'К.','В.','оф.',212),
  ('Духов', 'Р.','М.','оф.',200)
   
- INSERT INTO Weapon
- (Name,ID)
+ INSERT INTO GiveWeapon
+ (OfficerID,DeliverID)
  VALUES
- ('AK-47', 1),
- ('Глок20', 2),
- ('AK-74', 3)
+ (1,1),
+ (1,2),
+ (2,3),
+ (2,2),
+ (3,1),
+ (3,2),
+ (4,1)
 
  SELECT * FROM Deliver
- SELECT * FROM Weapon
  SELECT * FROM Officer
+ SELECT * FROM GiveWeapon
 
  DROP TABLE Officer;
- DROP TABLE Weapon;
+ DROP TABLE GiveWeapon;
  DROP TABLE Deliver;
