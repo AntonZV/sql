@@ -21,102 +21,94 @@ COLLATE Cyrillic_General_CI_AS
 
 EXECUTE sp_helpdb HomeWork4;
 
-USE HomeWork4              
-GO   
- 
- CREATE TABLE Officer
+ USE HomeWork4              
+ GO
+   
+ CREATE TABLE [Rank]
  (
-	ID int identity not null unique,
-    FirstName nvarchar(20) not null,
-	SecondName nvarchar(20) not null,
-	ThirdName nvarchar(20) not null,
-	[Rank] nvarchar(20) not null,
-	primary key (FirstName,SecondName,ThirdName)
- )
-
- CREATE TABLE Delivering
- (
-	ID int not null 
-		foreign key references Officer(ID)
-		on delete cascade,
-	Weapon nvarchar(10) not null,
-	FK_ID int identity unique not null,
-	primary key(ID,Weapon)
+	ID int identity not null primary key,
+	Name nvarchar(20) not null
  )
  GO
 
- CREATE TABLE Receiver
+ CREATE TABLE Weapon
  (
-	ID int unique not null 
-		foreign key references Officer(ID)
-		on delete cascade,
-	Platoon int not null,
+	ID int identity not null primary key,
+	Name nvarchar(10) not null
+ )
+ GO
 
-	primary key(ID,Platoon)
+ CREATE TABLE Officer
+ (
+	ID int identity not null primary key,
+    FirstName nvarchar(20) not null,
+	SecondName nvarchar(20) not null,
+	ThirdName nvarchar(20) not null,
+	RankID int null foreign key references [Rank](ID),
+	Number int null,
+	Platoon int null,
  )
  GO
 
  CREATE TABLE GiveWeapon
  (
+	ID int identity not null primary key,
 	ReceiverID int not null
-		foreign key references Receiver(ID),
-	DeliveringID int not null
-		foreign key references Delivering(FK_ID),
-	primary key(ReceiverID,DeliveringID)	
+		foreign key references Officer(ID),
+	DeliverID int not null
+		foreign key references Officer(ID),
+	WeaponID int not null
+		foreign key references Weapon(ID),
  )
  GO
 
+ INSERT INTO [Rank]
+ VALUES
+ ('майор'),
+ ('подполковник'),
+ ('оф.')
+
+ INSERT INTO Weapon
+ VALUES
+ ('АК-47'),
+ ('Глок20'),
+ ('АК-74')
+
  INSERT INTO Officer
- (FirstName,SecondName,ThirdName,[Rank])
+ (FirstName, SecondName, ThirdName, RankID, Number, Platoon)
  VALUES
- ('Буров', 'O.','C.','майор'),
- ('Рыбаков', 'Н.','Г.','майор'),
- ('Деребанов', 'В.','Я.','подполковник'),
- ('Петров', 'В.', 'А.', 'оф.'),
- ('Лодарев', 'П.','С.','оф.'),
- ('Леонтьев', 'К.','В.','оф.'),
- ('Духов', 'Р.','М.','оф.')
-
- INSERT INTO Delivering
- (ID,Weapon)
- VALUES
- (1,'AK-47'),
- (2,'Глок20'),
- (3,'AK-74'),
- (1,'Глок20')
-
- INSERT INTO Receiver
- (ID,Platoon)
- VALUES
- (4,222),
- (5,232),
- (6,212),
- (7,200)
+ ('Буров', 'O.','C.', 1, null, null),
+ ('Рыбаков', 'Н.','Г.', 1, null, null),
+ ('Деребанов', 'В.','Я.', 2, null, null),
+ ('Петров', 'В.', 'А.', 3, 205, 222),
+ ('Лодарев', 'П.','С.', 3, 221, 232),
+ ('Леонтьев', 'К.','В.', 3, 201, 212),
+ ('Духов', 'Р.','М.', null, null, null)
   
  INSERT INTO GiveWeapon
- (ReceiverID,DeliveringID)
+ (DeliverID, ReceiverID, WeaponID)
  VALUES
- (4,1),
- (4,2),
- (5,3),
- (5,2),
- (6,1),
- (6,2),
- (7,1)
+ (1,4,1),
+ (1,6,1),
+ (1,7,1),
+ (2,4,2),
+ (2,5,2),
+ (2,6,2),
+ (3,5,3)
 
+ SELECT Name as [Rank] FROM [Rank]
+ SELECT Name as Weapon FROM Weapon
  SELECT * FROM Officer
- SELECT * FROM Delivering
- SELECT * FROM Receiver
  SELECT * FROM GiveWeapon
 
  TRUNCATE TABLE GiveWeapon
- TRUNCATE TABLE Delivering
- TRUNCATE TABLE Receiver
  TRUNCATE TABLE Officer
+ TRUNCATE TABLE Weapon
+ TRUNCATE TABLE [Rank]
 
  DROP TABLE GiveWeapon;
- DROP TABLE Delivering;
- DROP TABLE Receiver;
  DROP TABLE Officer;
+ DROP TABLE Weapon;
+ DROP TABLE [Rank];
 
 --smth
