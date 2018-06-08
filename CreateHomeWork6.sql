@@ -103,4 +103,4 @@ CREATE TABLE ContactInfo
  SELECT FirstName,SecondName,BirthDate,Phone FROM ContactInfo, WorkInfo, PersonalInfo
  WHERE ContactInfo.ID=WorkInfo.ID and Position='менеджер' and PersonalInfo.ID=WorkInfo.ID
 
- 
+ sgsdlg
