@@ -53,12 +53,12 @@ EXECUTE sp_helpdb HomeWork4;
  CREATE TABLE GiveWeapon
  (
 	ID int identity not null primary key,
-	ReceiverID int not null
-		foreign key references Officer(ID),
 	DeliverID int not null
 		foreign key references Officer(ID),
 	WeaponID int not null
 		foreign key references Weapon(ID),
+	ReceiverID int not null
+		foreign key references Officer(ID),
  )
  GO
 
@@ -83,7 +83,7 @@ EXECUTE sp_helpdb HomeWork4;
  ('Петров', 'В.', 'А.', 3, 205, 222),
  ('Лодарев', 'П.','С.', 3, 221, 232),
  ('Леонтьев', 'К.','В.', 3, 201, 212),
- ('Духов', 'Р.','М.', null, null, null)
+ ('Духов', 'Р.','М.', null, null, 200)
   
  INSERT INTO GiveWeapon
  (DeliverID, ReceiverID, WeaponID)
@@ -96,19 +96,13 @@ EXECUTE sp_helpdb HomeWork4;
  (2,6,2),
  (3,5,3)
 
- SELECT Name as [Rank] FROM [Rank]
- SELECT Name as Weapon FROM Weapon
+ SELECT ID,Name as [Rank] FROM [Rank]
+ SELECT ID,Name as Weapon FROM Weapon
  SELECT * FROM Officer
  SELECT * FROM GiveWeapon
-
- TRUNCATE TABLE GiveWeapon
- TRUNCATE TABLE Officer
- TRUNCATE TABLE Weapon
- TRUNCATE TABLE [Rank]
 
  DROP TABLE GiveWeapon;
  DROP TABLE Officer;
  DROP TABLE Weapon;
  DROP TABLE [Rank];
 
---smth
