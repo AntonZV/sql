@@ -102,18 +102,24 @@ CREATE TABLE ContactInfo
 
  /*SELECT FirstName,SecondName,Phone,BirthDate FROM ContactInfo,PersonalInfo
  WHERE ContactInfo.ID=PersonalInfo.ID and [Status]='UnMarried'*/
- SELECT BirthDate, (SELECT FirstName FROM ContactInfo
+ /*SELECT BirthDate, (SELECT FirstName FROM ContactInfo
 					WHERE  ContactInfo.ID=PersonalInfo.ID) AS FirstName,
 					(SELECT SecondName FROM ContactInfo
 					WHERE  ContactInfo.ID=PersonalInfo.ID) AS SecondName,
 					(SELECT Phone FROM ContactInfo
 					WHERE  ContactInfo.ID=PersonalInfo.ID) AS Phone
  FROM PersonalInfo
- WHERE [Status]='UnMarried' 
+ WHERE [Status]='UnMarried' */
+
+ select FirstName,SecondName,Phone, (select BirthDate from PersonalInfo
+									 where PersonalInfo.ID=ContactInfo.ID) as BirthDate
+ from ContactInfo
+ where ContactInfo.ID = (select PersonalInfo.ID from PersonalInfo
+						 where  PersonalInfo.ID=ContactInfo.ID and [Status]='UnMarried') 
 
  /*SELECT FirstName,SecondName,BirthDate,Phone FROM ContactInfo, WorkInfo, PersonalInfo
  WHERE ContactInfo.ID=WorkInfo.ID and Position='менеджер' and PersonalInfo.ID=WorkInfo.ID*/
- select BirthDate, ( select FirstName from ContactInfo
+ /*select BirthDate, ( select FirstName from ContactInfo
 					 where ContactInfo.ID=
 							(select WorkInfo.ID from WorkInfo
 							 where WorkInfo.ID=ContactInfo.ID and Position='менеджер' and WorkInfo.ID=PersonalInfo.ID)  ) as FirstName,
@@ -127,6 +133,11 @@ CREATE TABLE ContactInfo
 							 where WorkInfo.ID=ContactInfo.ID and Position='менеджер' and WorkInfo.ID=PersonalInfo.ID)  ) as Phone 
  from PersonalInfo
  where PersonalInfo.ID= (select WorkInfo.ID from WorkInfo
-						 where position='менеджер' and WorkInfo.ID=PersonalInfo.ID)
+						 where position='менеджер' and WorkInfo.ID=PersonalInfo.ID)*/
+select FirstName,SecondName,Phone, (select BirthDate from PersonalInfo
+									 where PersonalInfo.ID=ContactInfo.ID) as BirthDate
+ from ContactInfo
+ where ContactInfo.ID = (select WorkInfo.ID from WorkInfo
+						 where  WorkInfo.ID=ContactInfo.ID and Position='менеджер') 
 
 
