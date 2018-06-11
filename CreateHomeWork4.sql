@@ -106,11 +106,8 @@ EXECUTE sp_helpdb HomeWork4;
  DROP TABLE Weapon;
  DROP TABLE [Rank];
 
- select firstname,secondname,thirdname  /*from officer*/--, ((select weapon.name from weapon
-										  where officer.id in (select giveweapon.receiverid from giveweapon
-															  where giveweapon.weaponid in (select weapon.id from weapon
-											                                             where weapon.name='¿ -47')) --as weapon
- from officer
+ select firstname,secondname,thirdname, name from weapon,giveweapon,officer
+ where officer.id=receiverid and weapon.id=weaponid and name='¿ -47'
 
 
  select firstname,secondname,thirdname,name from officer,weapon
@@ -127,11 +124,11 @@ EXECUTE sp_helpdb HomeWork4;
 		weapon
 		on weapon.id=giveweapon.weaponid and weapon.name='¿ -47'
 
- select firstname,secondname,thirdname,name from officer,weapon,
- where officer.id=(sand giveweapon.weaponid= (select weapon.id from weapon
-											where weapon.name='¿ -47')
 
 select firstname,secondname,thirdname , (select name from weapon
-									   where name='¿ -47' and weapon.id in (select weaponid from giveweapon
+									     where name='¿ -47' and weapon.id in (select weaponid from giveweapon
 														   where receiverid=officer.id)) as weapon
 from officer
+where officer.id in (select giveweapon.receiverid from giveweapon
+					where giveweapon.weaponid=(select weapon.id from weapon
+											   where weapon.name='¿ -47'))
