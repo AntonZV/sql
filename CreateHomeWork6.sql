@@ -94,13 +94,38 @@ CREATE TABLE ContactInfo
  DROP TABLE ContactInfo;
  DROP TABLE PersonalInfo;
 
- SELECT FirstName,SecondName,Phone,PersonalInfo.Adress FROM ContactInfo,PersonalInfo
- WHERE ContactInfo.ID=PersonalInfo.ID
+ /*SELECT FirstName,SecondName,Phone,Adress FROM ContactInfo,PersonalInfo
+ WHERE ContactInfo.ID=PersonalInfo.ID*/
+ SELECT FirstName,SecondName,Phone, (SELECT Adress FROM PersonalInfo
+									 WHERE ContactInfo.ID=PersonalInfo.ID) AS Adress
+ FROM ContactInfo
 
- SELECT FirstName,SecondName,BirthDate,Phone FROM ContactInfo,PersonalInfo
- WHERE ContactInfo.ID=PersonalInfo.ID and [Status]='UnMarried' 
+ /*SELECT FirstName,SecondName,Phone,BirthDate FROM ContactInfo,PersonalInfo
+ WHERE ContactInfo.ID=PersonalInfo.ID and [Status]='UnMarried'*/
+ SELECT BirthDate, (SELECT FirstName FROM ContactInfo
+					WHERE  ContactInfo.ID=PersonalInfo.ID) AS FirstName,
+					(SELECT SecondName FROM ContactInfo
+					WHERE  ContactInfo.ID=PersonalInfo.ID) AS SecondName,
+					(SELECT Phone FROM ContactInfo
+					WHERE  ContactInfo.ID=PersonalInfo.ID) AS Phone
+ FROM PersonalInfo
+ WHERE [Status]='UnMarried' 
 
- SELECT FirstName,SecondName,BirthDate,Phone FROM ContactInfo, WorkInfo, PersonalInfo
- WHERE ContactInfo.ID=WorkInfo.ID and Position='менеджер' and PersonalInfo.ID=WorkInfo.ID
+ /*SELECT FirstName,SecondName,BirthDate,Phone FROM ContactInfo, WorkInfo, PersonalInfo
+ WHERE ContactInfo.ID=WorkInfo.ID and Position='менеджер' and PersonalInfo.ID=WorkInfo.ID*/
+ select BirthDate, ( select FirstName from ContactInfo
+					 where ContactInfo.ID=
+							(select WorkInfo.ID from WorkInfo
+							 where WorkInfo.ID=ContactInfo.ID and Position='менеджер' and WorkInfo.ID=PersonalInfo.ID)  ) as FirstName,
+				   ( select SecondName from ContactInfo
+					 where ContactInfo.ID=
+							(select WorkInfo.ID from WorkInfo
+							 where WorkInfo.ID=ContactInfo.ID and Position='менеджер' and WorkInfo.ID=PersonalInfo.ID)  ) as SecondName,
+                   ( select Phone from ContactInfo
+					 where ContactInfo.ID=
+							(select WorkInfo.ID from WorkInfo
+							 where WorkInfo.ID=ContactInfo.ID and Position='менеджер' and WorkInfo.ID=PersonalInfo.ID)  ) as Phone 
+ from PersonalInfo,WorkInfo
+ where position='менеджер' and WorkInfo.ID=PersonalInfo.ID
 
- --smth
+
