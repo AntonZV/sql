@@ -58,8 +58,8 @@ EXECUTE sp_helpdb Task;
 		foreign key references TaskTypes(ID),
 	StartDate date not null,
 	EndDate date not null,
-	WorkerID int not null,
 	WorkerType int not null,
+	WorkerID int not null,
 	foreign key(WorkerID,WorkerType) references Workers(ID,WorkerType_ID),
 
 	CONSTRAINT CHK CHECK ((TaskType=WorkerType) or (TaskType=1 and WorkerType=2) or (TaskType=2 and WorkerType=1))
@@ -96,7 +96,7 @@ EXECUTE sp_helpdb Task;
  INSERT INTO Tasks
  VALUES
  (1,GETDATE(),GETDATE(),1,1),
--- (2,GETDATE(),GETDATE(),1,4),
+ (2,GETDATE(),GETDATE(),1,4),
  (1,GETDATE(),GETDATE(),2,2),
  (3,GETDATE(),GETDATE(),3,5),
  (4,GETDATE(),GETDATE(),4,6),
