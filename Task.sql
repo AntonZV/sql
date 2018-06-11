@@ -40,29 +40,33 @@ EXECUTE sp_helpdb Task;
 
  CREATE TABLE Workers
  (
-	ID int identity not null ,
+	ID int identity not null primary key,
     FirstName nvarchar(20) not null,
 	SecondName nvarchar(20) not null,
 	ThirdName nvarchar(20) not null,
 	BirthDate date not null,
-	WorkerType_ID int not null 
+	WorkerType int not null 
 		foreign key references WorkerTypes(ID),
-	primary key(ID,WorkerType_ID)
+ )
+ GO
+
+ CREATE TABLE [Enable]
+ (
+	ID int identity not null primary key,
+	TaskType int not null
+		foreign key references TaskTypes(ID),
+	WorkerType int not null
+		foreign key references Workers(ID)
  )
  GO
 
  CREATE TABLE Tasks
  (
 	ID int identity not null primary key,
-	TaskType int not null
-		foreign key references TaskTypes(ID),
 	StartDate date not null,
 	EndDate date not null,
-	WorkerType int not null,
-	WorkerID int not null,
-	foreign key(WorkerID,WorkerType) references Workers(ID,WorkerType_ID),
-
-	CONSTRAINT CHK CHECK ((TaskType=WorkerType) or (TaskType=1 and WorkerType=2) or (TaskType=2 and WorkerType=1))
+	EnableID int not null
+		foreign key references [Enable](ID)
  )
  GO
 
@@ -93,21 +97,32 @@ EXECUTE sp_helpdb Task;
  ('Леонтьев', 'К.','В.', DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start), 4),
  ('Духов', 'Р.','М.', DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start), 4)
   
+ INSERT INTO [Enable]
+ VALUES
+ (1,1),
+ (2,2),
+ (3,3),
+ (4,4),
+ (1,2),
+ (2,1)
+
  INSERT INTO Tasks
  VALUES
- (1,GETDATE(),GETDATE(),1,1),
- (2,GETDATE(),GETDATE(),1,4),
- (1,GETDATE(),GETDATE(),2,2),
- (3,GETDATE(),GETDATE(),3,5),
- (4,GETDATE(),GETDATE(),4,6),
- (4,GETDATE(),GETDATE(),4,7)
+ (GETDATE(),GETDATE(),1),
+ (GETDATE(),GETDATE(),2),
+ (GETDATE(),GETDATE(),3),
+ (GETDATE(),GETDATE(),4),
+ (GETDATE(),GETDATE(),5),
+ (GETDATE(),GETDATE(),6)
 
  SELECT * FROM TaskTypes
  SELECT * FROM WorkerTypes
  SELECT * FROM Workers
+ SELECT * FROM [Enable]
  SELECT * FROM Tasks
 
  DROP TABLE Tasks;
+ DROP TABLE [Enable];
  DROP TABLE Workers;
  DROP TABLE WorkerTypes;
  DROP TABLE TaskTypes;
