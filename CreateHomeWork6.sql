@@ -125,7 +125,8 @@ CREATE TABLE ContactInfo
 					 where ContactInfo.ID=
 							(select WorkInfo.ID from WorkInfo
 							 where WorkInfo.ID=ContactInfo.ID and Position='менеджер' and WorkInfo.ID=PersonalInfo.ID)  ) as Phone 
- from PersonalInfo,WorkInfo
- where position='менеджер' and WorkInfo.ID=PersonalInfo.ID
+ from PersonalInfo
+ where PersonalInfo.ID= (select WorkInfo.ID from WorkInfo
+						 where position='менеджер' and WorkInfo.ID=PersonalInfo.ID)
 
 
