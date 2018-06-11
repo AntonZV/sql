@@ -106,3 +106,6 @@ EXECUTE sp_helpdb HomeWork4;
  DROP TABLE Weapon;
  DROP TABLE [Rank];
 
+ select firstname,secondname,thirdname, (select name from weapon
+										 
+
