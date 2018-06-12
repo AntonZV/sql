@@ -123,12 +123,41 @@ CREATE TABLE ContactInfo
 	 join personalinfo
 	 on personalinfo.PersonID=ContactInfo.ID
 	 join workinfo
-	 on WorkInfo.personID=ContactInfo.ID and Position='менеджер'
+	 on WorkInfo.personID=ContactInfo.ID and Position='менеджер';
 	end;	
  
  exec proc1;
  exec proc2;
  exec proc3;
 
+ create function func1()
+ returns table
+ as
+	return (SELECT ContactInfo.FirstName,ContactInfo.SecondName,ContactInfo.Phone,PersonalInfo.Adress
+			FROM ContactInfo
+			join PersonalInfo
+			on ContactInfo.ID=PersonID );
 
+create function func2()
+ returns table
+ as
+	return (select Contactinfo.FirstName,contactinfo.SecondName,contactinfo.Phone, personalinfo.BirthDate
+			from ContactInfo
+			join personalinfo
+			on PersonID=ContactInfo.ID and [Status]='UnMarried');
+
+
+create function func3()
+ returns table
+ as
+	return ( select contactinfo.FirstName,contactinfo.SecondName,contactinfo.Phone, personalinfo.BirthDate
+			 from ContactInfo
+			 join personalinfo
+			 on personalinfo.PersonID=ContactInfo.ID
+			 join workinfo
+			 on WorkInfo.personID=ContactInfo.ID and Position='менеджер');
+
+select * from dbo.func1()
+select * from dbo.func2()
+select * from dbo.func3()
 
