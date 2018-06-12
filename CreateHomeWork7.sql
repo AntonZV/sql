@@ -1,27 +1,27 @@
-DROP DATABASE HomeWork5
+DROP DATABASE HomeWork7
 
-CREATE DATABASE HomeWork5  
+CREATE DATABASE HomeWork7  
 ON						
 (
-	NAME = 'HomeWork5',			
-	FILENAME = 'D:\Praktika\SQL\HomeWork5.mdf',		
+	NAME = 'HomeWork7',			
+	FILENAME = 'D:\Praktika\SQL\HomeWork7.mdf',		
 	SIZE = 30MB,                   
 	MAXSIZE = 100MB,				
 	FILEGROWTH = 10MB			
 )
 LOG ON						 
 ( 
-	NAME = 'LogHomeWork5',				   
-	FILENAME = 'D:\Praktika\SQL\HomeWork5.ldf',       
+	NAME = 'LogHomeWork7',				   
+	FILENAME = 'D:\Praktika\SQL\HomeWork7.ldf',       
 	SIZE = 5MB,                      
 	MAXSIZE = 50MB,                  
 	FILEGROWTH = 5MB                  
 )               
 COLLATE Cyrillic_General_CI_AS
 
-EXECUTE sp_helpdb HomeWork5;
+EXECUTE sp_helpdb HomeWork7;
 
-USE HomeWork5              
+USE HomeWork7              
 GO  
   
 CREATE TABLE ContactInfo
@@ -96,25 +96,30 @@ CREATE TABLE ContactInfo
  SELECT * FROM PersonalInfo
  SELECT * FROM WorkInfo
 
- SELECT FirstName,SecondName,Phone,Adress FROM 
-	ContactInfo
-	inner join
-	PersonalInfo
- ON ContactInfo.ID=PersonalInfo.personID;
 
- SELECT FirstName,SecondName,BirthDate,Phone FROM 
-	ContactInfo
-	inner join
-	PersonalInfo
- ON ContactInfo.ID=PersonalInfo.personID and [Status]='UnMarried';
+ create view View1 as
+ SELECT ContactInfo.FirstName,ContactInfo.SecondName,ContactInfo.Phone,PersonalInfo.Adress
+ FROM ContactInfo
+ join PersonalInfo
+ on ContactInfo.ID=PersonID
 
- SELECT FirstName,SecondName,BirthDate,Phone FROM 
-	ContactInfo
-	inner join
-	WorkInfo
-	ON ContactInfo.ID=WorkInfo.personID and Position='менеджер'
-	inner join
-	PersonalInfo
-	ON WorkInfo.ID=PersonalInfo.personID;
+ create view View2 as
+ select Contactinfo.FirstName,contactinfo.SecondName,contactinfo.Phone, personalinfo.BirthDate
+ from ContactInfo
+ join personalinfo
+ on PersonID=ContactInfo.ID and [Status]='UnMarried' 
 
- --smth
+ create view View3 as
+ select contactinfo.FirstName,contactinfo.SecondName,contactinfo.Phone, personalinfo.BirthDate
+ from ContactInfo
+ join personalinfo
+ on personalinfo.PersonID=ContactInfo.ID
+ join workinfo
+ on WorkInfo.personID=ContactInfo.ID and Position='менеджер'
+
+ SELECT * FROM View1
+ SELECT * FROM View2
+ SELECT * FROM View3
+
+
+

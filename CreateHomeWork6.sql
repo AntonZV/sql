@@ -33,23 +33,6 @@ CREATE TABLE ContactInfo
  )
  GO
 
- CREATE TABLE WorkInfo
- (
-	ID int identity not null primary key,
-	Position nvarchar(20) not null,
-	Salary int not null,
- )
- GO
-
- CREATE TABLE PersonalInfo
- (
-	ID int identity not null primary key,
-	BirthDate date not null,
-	Adress nvarchar(20) not null,
-	[Status] nvarchar(20) null default 'Unknown',
- )
- GO
-
  INSERT INTO ContactInfo
  (FirstName,SecondName,Phone)
  VALUES
@@ -61,83 +44,112 @@ CREATE TABLE ContactInfo
  ('Рыбаков', 'Н.','(098)6789123'),
  ('Деребанов', 'В.','(098)7891234')
 
+ CREATE TABLE WorkInfo
+ (
+	ID int identity not null primary key,
+	Position nvarchar(20) not null,
+	Salary int not null,
+	PersonID int not null 
+		foreign key references ContactInfo(ID)
+ )
+ GO
+
+ CREATE TABLE PersonalInfo
+ (
+	ID int identity not null primary key,
+	BirthDate date not null,
+	Adress nvarchar(20) not null,
+	[Status] nvarchar(20) null default 'Unknown',
+	PersonID int not null 
+		foreign key references ContactInfo(ID)
+ )
+ GO
+
  INSERT INTO WorkInfo
- (Position,Salary)
  VALUES
- ('главный директор', 25000),
- ('менеджер',8000),
- ('менеджер',8000),
- ('рабочий',3000),
- ('рабочий',3000),
- ('рабочий',3000),
- ('рабочий',3000)
+ ('главный директор', 25000,7),
+ ('менеджер',8000,6),
+ ('менеджер',8000,4),
+ ('рабочий',3000,3),
+ ('рабочий',3000,5),
+ ('рабочий',3000,2),
+ ('рабочий',3000,1)
   
  DECLARE @start DATE = '1980-01-01'
  DECLARE @end DATE = '2000-12-31'
 
  INSERT INTO PersonalInfo
- (BirthDate,Adress,[Status])
  VALUES
- (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Vinnytsia','Married'),
- (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Vinnytsia','UnMarried'),
- (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Kyiv','UnMarried'),
- (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Lviv','Married'),
- (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Lviv','UnMarried'),
- (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Kharkiv','UnMarried'),
- (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Kyiv','Married')
-
- SELECT * FROM WorkInfo
- SELECT * FROM ContactInfo
- SELECT * FROM PersonalInfo
+ (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Vinnytsia','Married',1),
+ (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Vinnytsia','UnMarried',2),
+ (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Kyiv','UnMarried',6),
+ (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Lviv','Married',5),
+ (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Lviv','UnMarried',4),
+ (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Kharkiv','UnMarried',3),
+ (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Kyiv','Married',7)
 
  DROP TABLE WorkInfo;
- DROP TABLE ContactInfo;
  DROP TABLE PersonalInfo;
+ DROP TABLE ContactInfo;
 
- /*SELECT FirstName,SecondName,Phone,Adress FROM ContactInfo,PersonalInfo
- WHERE ContactInfo.ID=PersonalInfo.ID*/
+ SELECT * FROM ContactInfo
+ SELECT * FROM PersonalInfo
+ SELECT * FROM WorkInfo
+
+
  SELECT FirstName,SecondName,Phone, (SELECT Adress FROM PersonalInfo
-									 WHERE ContactInfo.ID=PersonalInfo.ID) AS Adress
+									 WHERE ContactInfo.ID=PersonID) AS Adress
  FROM ContactInfo
 
+
+ select FirstName,SecondName,Phone, (select BirthDate from PersonalInfo
+									 where PersonID=ContactInfo.ID) as BirthDate
+ from ContactInfo
+ where ContactInfo.ID = (select PersonID from PersonalInfo
+						 where  PersonID=ContactInfo.ID and [Status]='UnMarried') 
+
+ 
+select FirstName,SecondName,Phone, (select BirthDate from PersonalInfo
+									 where PersonID=ContactInfo.ID) as BirthDate
+ from ContactInfo
+ where ContactInfo.ID = (select PersonID from WorkInfo
+						 where  PersonID=ContactInfo.ID and Position='менеджер') 
+
+
+
+--1
+ /*SELECT FirstName,SecondName,Phone,Adress FROM ContactInfo,PersonalInfo
+ WHERE ContactInfo.ID=PersonID*/
+
+ --2
  /*SELECT FirstName,SecondName,Phone,BirthDate FROM ContactInfo,PersonalInfo
- WHERE ContactInfo.ID=PersonalInfo.ID and [Status]='UnMarried'*/
+ WHERE ContactInfo.ID=PersonID and [Status]='UnMarried'*/
  /*SELECT BirthDate, (SELECT FirstName FROM ContactInfo
-					WHERE  ContactInfo.ID=PersonalInfo.ID) AS FirstName,
+					WHERE  ContactInfo.ID=PersonID) AS FirstName,
 					(SELECT SecondName FROM ContactInfo
-					WHERE  ContactInfo.ID=PersonalInfo.ID) AS SecondName,
+					WHERE  ContactInfo.ID=PersonID) AS SecondName,
 					(SELECT Phone FROM ContactInfo
-					WHERE  ContactInfo.ID=PersonalInfo.ID) AS Phone
+					WHERE  ContactInfo.ID=PersonID) AS Phone
  FROM PersonalInfo
  WHERE [Status]='UnMarried' */
 
- select FirstName,SecondName,Phone, (select BirthDate from PersonalInfo
-									 where PersonalInfo.ID=ContactInfo.ID) as BirthDate
- from ContactInfo
- where ContactInfo.ID = (select PersonalInfo.ID from PersonalInfo
-						 where  PersonalInfo.ID=ContactInfo.ID and [Status]='UnMarried') 
-
+ --3
  /*SELECT FirstName,SecondName,BirthDate,Phone FROM ContactInfo, WorkInfo, PersonalInfo
- WHERE ContactInfo.ID=WorkInfo.ID and Position='менеджер' and PersonalInfo.ID=WorkInfo.ID*/
+ WHERE ContactInfo.ID=WorkInfo.PersonID and Position='менеджер' and PersonalInfo.PersonID=WorkInfo.PersonID*/
  /*select BirthDate, ( select FirstName from ContactInfo
 					 where ContactInfo.ID=
-							(select WorkInfo.ID from WorkInfo
-							 where WorkInfo.ID=ContactInfo.ID and Position='менеджер' and WorkInfo.ID=PersonalInfo.ID)  ) as FirstName,
+							(select PersonID from WorkInfo
+							 where PersonID=ContactInfo.ID and Position='менеджер' and WorkInfo.PersonID=PersonalInfo.PersonID)  ) as FirstName,
 				   ( select SecondName from ContactInfo
 					 where ContactInfo.ID=
-							(select WorkInfo.ID from WorkInfo
-							 where WorkInfo.ID=ContactInfo.ID and Position='менеджер' and WorkInfo.ID=PersonalInfo.ID)  ) as SecondName,
+							(select PersonID from WorkInfo
+							 where PersonID=ContactInfo.ID and Position='менеджер' and WorkInfo.PersonID=PersonalInfo.PersonID)  ) as SecondName,
                    ( select Phone from ContactInfo
 					 where ContactInfo.ID=
-							(select WorkInfo.ID from WorkInfo
-							 where WorkInfo.ID=ContactInfo.ID and Position='менеджер' and WorkInfo.ID=PersonalInfo.ID)  ) as Phone 
+							(select PersonID from WorkInfo
+							 where PersonID=ContactInfo.ID and Position='менеджер' and WorkInfo.PersonID=PersonalInfo.PersonID)  ) as Phone 
  from PersonalInfo
- where PersonalInfo.ID= (select WorkInfo.ID from WorkInfo
-						 where position='менеджер' and WorkInfo.ID=PersonalInfo.ID)*/
-select FirstName,SecondName,Phone, (select BirthDate from PersonalInfo
-									 where PersonalInfo.ID=ContactInfo.ID) as BirthDate
- from ContactInfo
- where ContactInfo.ID = (select WorkInfo.ID from WorkInfo
-						 where  WorkInfo.ID=ContactInfo.ID and Position='менеджер') 
+ where PersonalInfo.PersonID= (select WorkInfo.PersonID from WorkInfo
+						 where position='менеджер' and WorkInfo.PersonID=PersonalInfo.PersonID)*/
 
 
