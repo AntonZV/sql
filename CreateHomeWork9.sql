@@ -27,7 +27,7 @@ CREATE TABLE ContactInfo
 	ID int identity not null primary key,
     FirstName nvarchar(20) not null,
 	SecondName nvarchar(20) not null,
-	Phone char(12) unique check (Phone like '([0-9][0-9][0-9])[0-9][0-9][0-9][0-9][0-9][0-9][0-9]'), 
+	Phone char(12) 
  )
  GO
 
@@ -52,10 +52,32 @@ CREATE TABLE ContactInfo
  )
  GO
 
+ create trigger dbo.contact_insert
+ on dbo.contactinfo
+ for insert
+ as
+	if exists
+	(
+	select * from inserted
+	where inserted.Phone not like '([0-9][0-9][0-9])[0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+	)
+   begin
+	    commit tran
+   end;
+   else
+   begin
+	   RAISERROR('Phone number is not correct!', 1, 16); 
+	   ROLLBACK TRAN
+   end;
+ go
+
+ begin tran
+ go
+
  INSERT INTO ContactInfo
  (FirstName,SecondName,Phone)
  VALUES
- ('Петров','В.','(098)1234567'),
+ ('Петров','В.','(098)123456*'),
  ('Лодарев','П.','(098)2345678'),
  ('Леонтьев','К.','(098)3456789'),
  ('Духов', 'Р.','(098)4567891'),
@@ -85,11 +107,15 @@ CREATE TABLE ContactInfo
  (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Lviv','UnMarried',4),
  (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Kharkiv','UnMarried',3),
  (DATEADD(DAY,ABS(CHECKSUM(NEWID())) % ( 1 + DATEDIFF(DAY,@start,@end)),@start),'Kyiv','Married',7)
+ go
 
  DROP TABLE WorkInfo;
  DROP TABLE PersonalInfo;
  DROP TABLE ContactInfo;
+ drop trigger dbo.contact_insert;
+ go
 
  SELECT * FROM ContactInfo
  SELECT * FROM PersonalInfo
  SELECT * FROM WorkInfo
+ go
